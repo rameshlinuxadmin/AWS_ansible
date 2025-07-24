@@ -1,0 +1,13 @@
+---
+- name: Instance_info
+  hosts: localhost
+  tasks:
+    - name:
+      amazon.aws.ec2_instance_info:
+        region: ap-south-1
+      register: instance_out
+
+    - debug: 
+        msg: |
+          "{{ instance_out.instances[0].instance_id }}"
+      when: instance_out.state == running

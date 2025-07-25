@@ -1,0 +1,26 @@
+---
+- name: Instance_info
+  hosts: localhost
+  gather_facts: yes 
+  tasks:
+    - name:
+      amazon.aws.ec2_instance_info:
+        region: ap-south-1
+      register: instance_output 
+
+    - name:
+      copy:
+        content: |
+          Instance ID: "{{ item.instance_id }}"
+          Instance Name: "{{ item.tags.Name }}"
+          Instance State : "{{ item.state.name }}"
+          Instance Type : "{{ item.instance_type }}"
+          Architecture: "{{ item.architecture }}"
+          Image ID : "{{ item.image_id }}"
+          Availability Zone : "{{ item.placement.availability_zone }}"
+          VPC ID : "{{ item.vpc_id }}"
+          Boot_mode : "{{ item.boot_mode }}"
+          Launch Time : "{{ item.launch_time }}"
+          Key Name : "{{ item.key_name }}"
+        dest: /mnt/e/AWS_ansible/playbooks/log/meta_"{{ item.tags.Name }}"_"{{ ansible_date_time.date }}"
+      loop: "{{ instance_output.instances }}"

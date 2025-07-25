@@ -1,0 +1,32 @@
+---
+- name: EC2 instance creation
+  hosts: localhost
+  ignore_errors: true
+  vars:   
+    - image_id: ami-0d0ad8bb301edb745
+  tasks: 
+    - name: image name
+      amazon.aws.ec2_ami_info:
+        image_ids: '{{ image_id }}'
+      register: ami_availability_check
+
+    - name:
+      debug:
+        msg: "{{ 'AMI is Available' if item.state == 'available' }}"
+      loop: "{{ ami_availability_check.images }}"
+
+
+    - name: Build instance
+      amazon.aws.ec2_instance:
+        name: TestVM
+        image_id: "{{ image_id }}"
+        count: 1
+        instance_type: t2.micro
+        key_name: ec2.pem
+        region: ap-south-1
+        security_group: sg-0b3537f85f18d8a88
+        volumes:
+          - device_name: "/dev/xvda"
+            volume_size: 8
+        state: present
+        wait: true

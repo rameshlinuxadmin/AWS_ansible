@@ -22,11 +22,42 @@
         image_id: "{{ image_id }}"
         count: 1
         instance_type: t2.micro
-        key_name: ec2.pem
+        key_name: "ec2"
         region: ap-south-1
         security_group: sg-0b3537f85f18d8a88
         volumes:
           - device_name: "/dev/xvda"
-            volume_size: 8
+            ebs:
+              volume_size: 8
+              volume_type: gp2
+              delete_on_termination: yes
         state: present
         wait: true
+      register: instance_out
+
+    - name: wait till instance started running
+      amazon.aws.ec2_instance_info:
+        filters:
+          tag:Name: "TestVM"
+      register: state_out
+      until: "{{ state_out['images'][0]['state'] }}" == "running"
+      retries: 10
+      delay: 15
+
+    - name: Store the output
+      copy:
+        content: |
+          Instance ID: "{{ item.instance_id }}"
+          Instance Name: "{{ item.tags.Name }}"
+          Instance State : "{{ item.state.name }}"
+          Instance Type : "{{ item.instance_type }}"
+          Architecture: "{{ item.architecture }}"
+          Image ID : "{{ item.image_id }}"
+          Availability Zone : "{{ item.placement.availability_zone }}"
+          VPC ID : "{{ item.vpc_id }}"
+          Boot_mode : "{{ item.boot_mode }}"
+          Launch Time : "{{ item.launch_time }}"
+          Key Name : "{{ item.key_name }}"
+        dest: /root/AWS_ansible/playbooks/log/Build_meta_{{ item.tags.Name }}_{{ ansible_date_time.date }}
+      loop: "{{ instance_out.instances }}"
+

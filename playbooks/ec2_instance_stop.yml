@@ -1,0 +1,10 @@
+---
+- name: EC2 instance Termination
+  hosts: localhost
+  tasks:
+    - name: 
+      amazon.aws.ec2_instance:
+        state: absent
+        filters:
+          tag:Name: TestVM
+            #instance-state-name: running 

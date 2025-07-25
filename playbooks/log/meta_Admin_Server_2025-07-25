@@ -1,5 +1,5 @@
 Instance ID: "i-02d871179a6533c92"
-Instance Name: "Admin Server"
+Instance Name: "Admin_Server"
 Instance State : "stopped"
 Instance Type : "t2.micro"
 Architecture: "x86_64"

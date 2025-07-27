@@ -1,0 +1,21 @@
+---
+- name: EC2 instance Actions
+  hosts: localhost
+  vars_prompt:
+    - name: host
+      prompt: Hostname ?
+      private: no
+
+    - name: Action 
+      prompt: Action which need to perform? [started, stopped, absent, rebooted] 
+      private: no
+  tasks:
+    - name: 
+      amazon.aws.ec2_instance:
+        state: '{{ Action }}' 
+        filters:
+          tag:Name: '{{ host }}'
+      register: state_out
+
+    - debug:
+       msg: "'{{ host }}''{{ state_out.instance_ids }}''{{ state_out.msg }}'"

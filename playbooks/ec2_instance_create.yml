@@ -40,7 +40,7 @@
         filters:
           tag:Name: "TestVM"
       register: state_out
-      until: "{{ state_out['images'][0]['state'] }}" == "running"
+      until: state_out.instances[0]['state']['name'] == "running"
       retries: 10
       delay: 15
 
@@ -58,6 +58,6 @@
           Boot_mode : "{{ item.boot_mode }}"
           Launch Time : "{{ item.launch_time }}"
           Key Name : "{{ item.key_name }}"
-        dest: /root/AWS_ansible/playbooks/log/Build_meta_{{ item.tags.Name }}_{{ ansible_date_time.date }}
+        dest: /mnt/e/AWS_ansible/playbooks/log/Build_meta_{{ item.tags.Name }}_{{ ansible_date_time.date }}
       loop: "{{ instance_out.instances }}"
 

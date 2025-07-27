@@ -7,4 +7,4 @@
         state: absent
         filters:
           tag:Name: TestVM
-            #instance-state-name: running 
+          instance-state-name: stopped 

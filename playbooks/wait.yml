@@ -2,19 +2,20 @@
 - name:
   hosts: localhost
   tasks:
+    - name: start instance
+      amazon.aws.ec2_instance:
+        state: stopped
+        filters:
+          tag:Name: "TestVM"
     - name: wait till instance started running
       amazon.aws.ec2_instance_info:
         filters:
           tag:Name: "TestVM"
       register: state_out
+      until: state_out.instances[0]['state']['name'] ==  'stopped'
+      retries: 10
+      delay: 15
 
     - name: state
-      debug: 
-        var: state_out
-        #msg: "{{ state_outinstances['state'][0]['name'] }}"
-
-          #- name: wait
-          #until: "{{ state_out['instances']['images'][0]['state'] }} == 'stopped'"
-          #retries: 10
-          #delay: 15
-
+      debug:
+        msg: "{{ state_out.instances[0]['state']['name'] }}"

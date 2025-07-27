@@ -1,3 +1,3 @@
 git add .
-git commit -m "Updated on `date`"
+git commit -m "Commited and pushed on `date`"
 git push

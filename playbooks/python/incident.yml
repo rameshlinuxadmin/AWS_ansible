@@ -1,0 +1,23 @@
+- name: Update ServiceNow incident state
+  hosts: localhost
+  gather_facts: false
+  collections:
+    - servicenow.itsm
+
+  vars:
+    servicenow_instance: "dev330868.service-now.com"
+    servicenow_username: "admin"
+    servicenow_password: "/ju+In1RpYU8"
+    incident_sys_id: "a83820b58f723300e7e16c7827bdeed2"  # Replace this with actual sys_id
+
+  tasks:
+    - name: Update incident state to 'In Progress'
+      servicenow.itsm.incident:
+        instance: "{{ servicenow_instance }}"
+        username: "{{ servicenow_username }}"
+        password: "{{ servicenow_password }}"
+        state: present
+        sys_id: "{{ incident_sys_id }}"
+        fields:
+          state: "2"  # 2 = In Progress
+          work_notes: "State changed to In Progress by Ansible"

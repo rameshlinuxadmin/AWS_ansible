@@ -10,7 +10,7 @@ print("service now instance is", data['instance'])
 instance = data['instance']
 username = data['username']
 password = data['password']
-#assignment_group_name = data['group']
+assignment_group_name = data['group']
 #state = "*"
 
 url = f"https://{instance}/api/now/table/incident"
@@ -20,18 +20,19 @@ url = f"https://{instance}/api/now/table/incident"
 #	f'state={state}'
 #]
 
-query_params = {
+#query_params = {
 	#'sysparm_query': '^'.join(conditions),
-	'sysparm_query': f'state=1',
-	'sysparm_limit': '5'
-}
+	#'sysparm_query': f'assignment_group={assignment_group_name}',
+	#'sysparm_limit': '5'
+#}
 
 auth = HTTPBasicAuth(username, password)
 headers = {
     "Accept": "application/json"
 }
 
-response = requests.get(url, headers=headers, auth=auth, params=query_params)
+#response = requests.get(url, headers=headers, auth=auth, params=query_params)
+response = requests.get(url, headers=headers, auth=auth)
 #response.raise_for_status()
 tmpout = response.json()
 for i in tmpout['result']:

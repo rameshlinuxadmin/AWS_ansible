@@ -1,33 +1,60 @@
 import requests
+import json
 from requests.auth import HTTPBasicAuth
 
-# ServiceNow instance info
-instance = "dev330868.service-now.com"
-username = "admin"
-password = "/ju+In1RpYU8"
-#sys_id = "cfcbad03d711110050f5edcb9e61038f"
-sys_id = "6816f79cc0a8016401c5a33be04be441"
+with open('/mnt/e/AWS_ansible/playbooks/python/data.json', 'r') as file:
+    data = json.load(file)
 
-url = f"https://{instance}/api/now/table/incident/sys_user/{sys_id}"
+print("service now instance is", data['instance'])
+
+# ServiceNow instance info
+instance = data['instance']
+username = data['username']
+password = data['password']
+sys_id = data['group']
+istate = "2"
+
+url = f"https://{instance}/api/now/table/incident"
 
 headers = {
     "Content-Type": "application/json",
     "Accept": "application/json",
 }
 
-payload = {
-    "state": "2",
-    "work_notes": "State changed to In Progress by Python script"
+conditions = [
+	f'assignment_group.sys_id={sys_id}',
+	f'state={istate}'
+]
+query_params = {
+	"sysparm_query": '^'.join(conditions)
 }
-'''
-response = requests.patch(url, auth=HTTPBasicAuth(username, password), json=payload, headers=headers)
+
+response = requests.get(url, auth=HTTPBasicAuth(username, password),  params=query_params, headers=headers)
+ 
+tmp = response.json()
+#inc = tmp['result'][0]['number']
+
+for i in tmp['result']:
+  print(i['number'])
+
 
 if response.status_code == 200:
-    print("Incident updated successfully.")
-else:
-    print(f"Failed to update incident: {response.status_code} {response.text}")
-'''
+   incidents = response.json().get('result', [])
+   for incident in incidents:
+       incident_sys_id = incident['sys_id']
+       patch_url = f"{url}/{incident_sys_id}"
 
-get_response = requests.get(url, auth=HTTPBasicAuth(username, password), headers=headers)
-print(f"GET status: {get_response.status_code}")
-print(get_response.text)
+       payload = {
+         "state": "3",
+      	 "work_notes": "Auto moved incident to new state to ignore the SLA breach"
+       }
+
+       patch_response = requests.patch(patch_url, auth=HTTPBasicAuth(username, password), headers=headers, json=payload)
+
+       if patch_response.status_code == 200:
+         print(f"Updated incident {incident_sys_id}")
+       else:
+         print(f"Failed to update incident {incident_sys_id}: {patch_response.status_code}")
+else:
+    print(f"Failed to retrieve incidents: {response.status_code} - {response.text}")
+

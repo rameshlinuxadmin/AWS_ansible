@@ -1,10 +1,16 @@
 import requests
 from requests.auth import HTTPBasicAuth
+import json
 
-instance = "dev330868.service-now.com"
-username = "admin"
-password = "/ju+In1RpYU8"
-group_name = "Team Development Code Reviewers"  # Replace with your actual queue name
+with open('/mnt/e/AWS_ansible/playbooks/python/data.json', 'r') as file:
+    data = json.load(file)
+
+print("service now instance is", data['instance'])
+
+instance = data['instance']
+username = data['username']
+password = data['password']
+group_name = "Team Development Code Reviewers"
 
 url = f"https://{instance}/api/now/table/sys_user_group"
 query_params = {

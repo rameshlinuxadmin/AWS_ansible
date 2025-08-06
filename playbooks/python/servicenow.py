@@ -12,7 +12,7 @@ instance = data['instance']
 username = data['username']
 password = data['password']
 sys_id = data['group']
-istate = "2"
+#istate = "2"
 
 url = f"https://{instance}/api/now/table/incident"
 
@@ -23,7 +23,7 @@ headers = {
 
 conditions = [
 	f'assignment_group.sys_id={sys_id}',
-	f'state={istate}'
+#	f'state={istate}'
 ]
 query_params = {
 	"sysparm_query": '^'.join(conditions)
@@ -37,7 +37,7 @@ tmp = response.json()
 for i in tmp['result']:
   print(i['number'])
 
-
+'''
 if response.status_code == 200:
    incidents = response.json().get('result', [])
    for incident in incidents:
@@ -57,4 +57,4 @@ if response.status_code == 200:
          print(f"Failed to update incident {incident_sys_id}: {patch_response.status_code}")
 else:
     print(f"Failed to retrieve incidents: {response.status_code} - {response.text}")
-
+'''
